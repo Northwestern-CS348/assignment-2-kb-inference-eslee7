@@ -129,23 +129,26 @@ class KnowledgeBase(object):
         ####################################################
         if isinstance(fact_or_rule, Fact) and fact_or_rule in self.facts:
             if fact_or_rule.asserted:
+                ind = self.facts.index(fact_or_rule)
                 #if fact is supported, make it no longer asserted
-                if len(fact_or_rule.supported_by) > 0:
-                    fact_or_rule.asserted = False
+                if len(self.facts[ind].supported_by) > 0:
+                    self.facts[ind].asserted = False
                     return
                 #if fact is not supported, remove it
                 else:
                     # remove the fact from the kb
-                    ind = self.facts.index(fact_or_rule)
                     del self.facts[ind]
                     # handle facts it was supporting
-                    for ind, supported_fact in enumerate(fact_or_rule.supports_facts):
-                        supported_fact.supported_by = [x for x in supported_fact.supported_by if x[0] != fact_or_rule]
+                    for supported_fact in self.facts[ind].supports_facts:
+                        ind_sf = self.facts.index(supported_fact)
+                        self.facts[ind_sf].supported_by = [x for x in self.facts[ind_sf].supported_by if
+                                                           x != fact_or_rule]
                         self.kb_retract_recursive(supported_fact)
                     # handle rules it was supporting
-                    for supported_rule in fact_or_rule.supports_rules:
-                        supported_fact.supported_by = [x for x in supported_fact.supported_by if x[0] != fact_or_rule]
-                        self.kb_retract_recursive(supported_rule)
+                    for supported_rule in self.facts[ind].supports_rules:
+                        ind_sr = self.rules.index(supported_rule)
+                        self.rules[ind_sr].supported_by = [x for x in self.rules[ind_sr].supported_by if x != fact_or_rule]
+                        self.kb_retract_recursive(supported_fact)
 
 
     def kb_retract_recursive(self, fact_or_rule):
@@ -163,13 +166,17 @@ class KnowledgeBase(object):
                     del self.facts[ind]
                     # handle facts it was supporting
                     for supported_fact in fact_or_rule.supports_facts:
-                        supported_fact.supported_by = [x for x in supported_fact.supported_by if x[0] != fact_or_rule]
-                        self.kb_retract_recursive(supported_fact)
+                        ind_sf = self.facts.index(supported_fact)
+                        self.facts[ind_sf].supported_by = [x for x in self.facts[ind_sf].supported_by if
+                                                           x != fact_or_rule]
+                        self.kb_retract_recursive(self.facts[ind_sf])
                     # handle rules it was supporting
                     for supported_rule in fact_or_rule.supports_rules:
-                        supported_fact.supported_by = [x for x in supported_fact.supported_by if x[0] != fact_or_rule]
-                        self.kb_retract_recursive(supported_rule)
-                        
+                        ind_sr = self.rules.index(supported_rule)
+                        self.rules[ind_sr].supported_by = [x for x in self.rules[ind_sr].supported_by if
+                                                           x != fact_or_rule]
+                        self.kb_retract_recursive(self.rules[ind_sr])
+
         # for rules, because looking at supported_by's element[1]
         elif isinstance(fact_or_rule, Fact) and fact_or_rule in self.facts:
             if not fact_or_rule.asserted:
@@ -179,19 +186,17 @@ class KnowledgeBase(object):
                     del self.facts[ind]
                     # handle facts it was supporting
                     for supported_fact in fact_or_rule.supports_facts:
-                        supported_fact.supported_by = [x for x in supported_fact.supported_by if x[1] != fact_or_rule]
-                        self.kb_retract_recursive(supported_fact)
+                        ind_sf = self.facts.index(supported_fact)
+                        self.facts[ind_sf].supported_by = [x for x in self.facts[ind_sf].supported_by if
+                                                           x != fact_or_rule]
+                        self.kb_retract_recursive(self.facts[ind_sf])
                     # handle rules it was supporting
                     for supported_rule in fact_or_rule.supports_rules:
-                        supported_fact.supported_by = [x for x in supported_fact.supported_by if x[1] != fact_or_rule]
-                        self.kb_retract_recursive(supported_rule)
+                        ind_sr = self.rules.index(supported_rule)
+                        self.rules[ind_sr].supported_by = [x for x in self.rules[ind_sr].supported_by if
+                                                           x != fact_or_rule]
+                        self.kb_retract_recursive(self.rules[ind_sr])
 
-
-
-
-
-
-        
 
 class InferenceEngine(object):
     def fc_infer(self, fact, rule, kb):
