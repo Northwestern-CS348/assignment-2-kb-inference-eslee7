@@ -145,4 +145,30 @@ class InferenceEngine(object):
         printv('Attempting to infer from {!r} and {!r} => {!r}', 1, verbose,
             [fact.statement, rule.lhs, rule.rhs])
         ####################################################
-        # Student code goes here
+        binding = match(fact.statement, rule.lhs[0]) # False if there is a binding
+        if binding:
+            if len(rule.lhs) == 1:
+                # then, the right hand side is instantiated and this is a fact for each binding
+                # supported by/from/etc
+                new_statement = instantiate(rule.rhs, binding)
+                new_fact = Fact(new_statement, [fact, rule])
+                fact.supports_facts.append(new_fact)
+                rule.supports_facts.append(new_fact)
+                kb.kb_add(new_fact)
+            else:
+                # then, there is a new rule, for the rest of the lhs -> rhs
+                # but only with that binding, for each binding
+                # supported by/from/etc
+                lhs_statements = [] # rule[0] for Rule(rule, supported_by)
+                for lhs_rule in rule.lhs[1:]: # sublist containing all but first element
+                    new_lsh_statement = instantiate(lhs_rule, binding)
+                    lhs_statements.append(new_lsh_statement)
+                rhs_statement = instantiate(rule.rhs, binding)
+                new_rule = Rule([lhs_statements,rhs_statement],[fact, rule])
+                fact.supports_rules.append(new_rule)
+                fact.supports_rules.append(new_rule)
+                kb.kb_add(new_rule)
+
+
+
+
