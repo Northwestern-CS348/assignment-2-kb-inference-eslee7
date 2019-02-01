@@ -151,8 +151,8 @@ class KnowledgeBase(object):
                     # for each rule that it supports
                     for supported_rule in self.facts[ind].supports_rules:
                         # find supported rule in database
-                        ind_sr = self.rule.index(supported_rule)
-                        KB_sr = self.rule[ind_sr]
+                        ind_sr = self.rules.index(supported_rule)
+                        KB_sr = self.rules[ind_sr]
                         # delete rule associated with fact from supported fact's list
                         ind_rule = KB_sr.supported_by.index(fact_or_rule) + 1
                         KB_sr.supported_by.pop(ind_rule)

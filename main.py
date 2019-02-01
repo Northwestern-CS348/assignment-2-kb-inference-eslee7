@@ -105,7 +105,7 @@ class KBTest(unittest.TestCase):
         # self.assertEqual(str(answer[1]), "?X : chen")
 
 
- 
+
 
 def pprint_justification(answer):
     """Pretty prints (hence pprint) justifications for the answer.
