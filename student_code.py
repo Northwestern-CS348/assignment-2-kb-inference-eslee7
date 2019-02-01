@@ -130,15 +130,14 @@ class KnowledgeBase(object):
         if isinstance(fact_or_rule, Fact) and fact_or_rule in self.facts: #if input is a Fact that exists, continue
             if fact_or_rule.asserted: #if Fact is asserted, continue
                 ind = self.facts.index(fact_or_rule) #find fact inserted in database
-                kb_fact = self.facts[ind]
                 #if fact is supported, leave it alone, but make it no longer asserted
-                if len(kb_fact.supported_by) > 0:
-                    kb_fact.asserted = False
+                if len(self.facts[ind].supported_by) > 0:
+                    self.facts[ind].asserted = False
                     return
                 #if fact is not supported, remove it
                 else:
                     # for each fact that it supports...
-                    for supported_fact in kb_fact.supports_facts:
+                    for supported_fact in self.facts[ind].supports_facts:
                         #find supported fact in database
                         ind_sf = self.facts.index(supported_fact)
                         KB_sf = self.facts[ind_sf]
@@ -148,9 +147,9 @@ class KnowledgeBase(object):
                         # delete fact from supported fact's list
                         ind_fact = KB_sf.supported_by.index(fact_or_rule)
                         KB_sf.supported_by.pop(ind_fact)
-                        self.kb_retract_recursive(supported_fact)
+                        self.kb_retract_recursive(KB_sf)
                     # for each rule that it supports
-                    for supported_rule in fact_or_rule.supports_rules:
+                    for supported_rule in self.facts[ind].supports_rules:
                         # find supported rule in database
                         ind_sr = self.rule.index(supported_rule)
                         KB_sr = self.rule[ind_sr]
@@ -160,9 +159,9 @@ class KnowledgeBase(object):
                         # delete fact from supported fact's list
                         ind_fact = KB_sr.supported_by.index(fact_or_rule)
                         KB_sr.supported_by.pop(ind_fact)
-                        self.kb_retract_recursive(supported_rule)
+                        self.kb_retract_recursive(KB_sr)
                     # remove the fact from the kb
-                        del kb_fact
+                        del self.facts[ind]
 
 
     def kb_retract_recursive(self, fact_or_rule):
@@ -227,7 +226,7 @@ class KnowledgeBase(object):
                         # find supported rule in database
                         ind_sr = self.rules.index(supported_rule)
                         KB_sr = self.rules[ind_sr]
-                        # delete face associated with rule from supported rules's list
+                        # delete fact associated with rule from supported rules's list
                         ind_fact = KB_sr.supported_by.index(fact_or_rule) - 1
                         KB_sr.supported_by.pop(ind_fact)
                         # delete rule from supported rules's list
@@ -271,7 +270,7 @@ class InferenceEngine(object):
                 rhs_statement = instantiate(rule.rhs, binding)
                 new_rule = Rule([lhs_statements,rhs_statement],[fact, rule])
                 fact.supports_rules.append(new_rule)
-                fact.supports_rules.append(new_rule)
+                rule.supports_rules.append(new_rule)
                 kb.kb_add(new_rule)
 
 
