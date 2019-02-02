@@ -161,7 +161,7 @@ class KnowledgeBase(object):
                         KB_sr.supported_by.pop(ind_fact)
                         self.kb_retract_recursive(KB_sr)
                     # remove the fact from the kb
-                        del self.facts[ind]
+                    del self.facts[ind]
 
 
     def kb_retract_recursive(self, fact_or_rule):
