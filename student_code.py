@@ -141,24 +141,18 @@ class KnowledgeBase(object):
                         #find supported fact in database
                         ind_sf = self.facts.index(supported_fact)
                         KB_sf = self.facts[ind_sf]
-                        # delete rule associated with fact from supported fact's list
-                        ind_rule = KB_sf.supported_by.index(fact_or_rule) + 1
-                        KB_sf.supported_by.pop(ind_rule)
-                        # delete fact from supported fact's list
-                        ind_fact = KB_sf.supported_by.index(fact_or_rule)
-                        KB_sf.supported_by.pop(ind_fact)
+                        for index, fact_rule_list in enumerate(KB_sf.supported_by):
+                            if fact_rule_list[0] == fact_or_rule:
+                                KB_sf.supported_by.pop(index)
                         self.kb_retract_recursive(KB_sf)
                     # for each rule that it supports
                     for supported_rule in self.facts[ind].supports_rules:
                         # find supported rule in database
                         ind_sr = self.rules.index(supported_rule)
                         KB_sr = self.rules[ind_sr]
-                        # delete rule associated with fact from supported fact's list
-                        ind_rule = KB_sr.supported_by.index(fact_or_rule) + 1
-                        KB_sr.supported_by.pop(ind_rule)
-                        # delete fact from supported fact's list
-                        ind_fact = KB_sr.supported_by.index(fact_or_rule)
-                        KB_sr.supported_by.pop(ind_fact)
+                        for index, fact_rule_list in enumerate(KB_sr.supported_by):
+                            if fact_rule_list[0] == fact_or_rule:
+                                KB_sr.supported_by.pop(index)
                         self.kb_retract_recursive(KB_sr)
                     # remove the fact from the kb
                     del self.facts[ind]
@@ -182,24 +176,18 @@ class KnowledgeBase(object):
                         # find supported fact in database
                         ind_sf = self.facts.index(supported_fact)
                         KB_sf = self.facts[ind_sf]
-                        # delete rule associated with fact from supported fact's list
-                        ind_rule = KB_sf.supported_by.index(fact_or_rule) + 1
-                        KB_sf.supported_by.pop(ind_rule)
-                        # delete fact from supported fact's list
-                        ind_fact = KB_sf.supported_by.index(fact_or_rule)
-                        KB_sf.supported_by.pop(ind_fact)
+                        for index, fact_rule_list in enumerate(KB_sf.supported_by):
+                            if fact_rule_list[0] == fact_or_rule:
+                                KB_sf.supported_by.pop(index)
                         self.kb_retract_recursive(KB_sf)
                     # handle rules it was supporting
                     for supported_rule in fact_or_rule.supports_rules:
                         # find supported rule in database
                         ind_sr = self.rules.index(supported_rule)
                         KB_sr = self.rules[ind_sr]
-                        # delete rule associated with fact from supported rules's list
-                        ind_rule = KB_sr.supported_by.index(fact_or_rule) + 1
-                        KB_sr.supported_by.pop(ind_rule)
-                        # delete fact from supported rules's list
-                        ind_fact = KB_sr.supported_by.index(fact_or_rule)
-                        KB_sr.supported_by.pop(ind_fact)
+                        for index, fact_rule_list in enumerate(KB_sr.supported_by):
+                            if fact_rule_list[0] == fact_or_rule:
+                                KB_sr.supported_by.pop(index)
                         self.kb_retract_recursive(KB_sr)
 
         # for inferred rules that are no longer supported
@@ -214,24 +202,18 @@ class KnowledgeBase(object):
                         # find supported fact in database
                         ind_sf = self.facts.index(supported_fact)
                         KB_sf = self.facts[ind_sf]
-                        # delete fact associated with rule from supported fact's list
-                        ind_fact = KB_sf.supported_by.index(fact_or_rule) - 1
-                        KB_sf.supported_by.pop(ind_fact)
-                        # delete rule from supported fact's list
-                        ind_rule = KB_sf.supported_by.index(fact_or_rule)
-                        KB_sf.supported_by.pop(ind_rule)
+                        for index, fact_rule_list in enumerate(KB_sf.supported_by):
+                            if fact_rule_list[1] == fact_or_rule:
+                                KB_sf.supported_by.pop(index)
                         self.kb_retract_recursive(KB_sf)
                     # handle rules it was supporting
                     for supported_rule in fact_or_rule.supports_rules:
                         # find supported rule in database
                         ind_sr = self.rules.index(supported_rule)
                         KB_sr = self.rules[ind_sr]
-                        # delete fact associated with rule from supported rules's list
-                        ind_fact = KB_sr.supported_by.index(fact_or_rule) - 1
-                        KB_sr.supported_by.pop(ind_fact)
-                        # delete rule from supported rules's list
-                        ind_rule = KB_sr.supported_by.index(fact_or_rule)
-                        KB_sr.supported_by.pop(ind_rule)
+                        for index, fact_rule_list in enumerate(KB_sr.supported_by):
+                            if fact_rule_list[1] == fact_or_rule:
+                                KB_sr.supported_by.pop(index)
                         self.kb_retract_recursive(KB_sr)
 
 class InferenceEngine(object):
@@ -255,7 +237,7 @@ class InferenceEngine(object):
                 # then, the right hand side is instantiated and this is a fact for each binding
                 # supported by/from/etc
                 new_statement = instantiate(rule.rhs, binding)
-                new_fact = Fact(new_statement, [fact, rule])
+                new_fact = Fact(new_statement, [[fact, rule]])
                 fact.supports_facts.append(new_fact)
                 rule.supports_facts.append(new_fact)
                 kb.kb_add(new_fact)
@@ -268,7 +250,7 @@ class InferenceEngine(object):
                     new_lsh_statement = instantiate(lhs_rule, binding)
                     lhs_statements.append(new_lsh_statement)
                 rhs_statement = instantiate(rule.rhs, binding)
-                new_rule = Rule([lhs_statements,rhs_statement],[fact, rule])
+                new_rule = Rule([lhs_statements,rhs_statement],[[fact, rule]])
                 fact.supports_rules.append(new_rule)
                 rule.supports_rules.append(new_rule)
                 kb.kb_add(new_rule)

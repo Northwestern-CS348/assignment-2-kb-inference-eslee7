@@ -60,7 +60,7 @@ class KBTest(unittest.TestCase):
         r1 = read.parse_input("fact: (techgenius profHammond)")
         print(' Retracting', r1)
         self.KB.kb_retract(r1)
-        r2 = read.parse_input("fact: (talkslike profHammond)")
+        r2 = read.parse_input("fact: (talkslike profHammond TonyStark)")
         print(' Retracting', r2)
         self.KB.kb_retract(r2)
         ask1 = read.parse_input("fact: (isliterally ?X TonyStark)")
